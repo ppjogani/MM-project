@@ -1,20 +1,13 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 08 02:30:20 2013
-
-@author: parin
-"""
 
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 06 16:46:24 2013
 
-@author: parin
+@author: parin and sneha
 """
 
 import numpy as np
 import wave, struct
-import pylab as pl
+#import pylab as pl
 from scipy import cluster as clu
 #import matplotlib.colors as clrs
 from skimage import color as cl
@@ -253,25 +246,8 @@ for k in np.arange(1, slot_size):
 avgslots_saturation=avgslots_saturation/(352*288)
 avgslots_saturation_kmeans=avgslots_saturation/np.max(avgslots_saturation)
 
-#
-##############weighted average for y
-#value_y=0    
-#for i in range(1,slot_size):
-#    value_y+=(slots_y[i]-slots_y[i-1])*avgslots[i-1]
-#
-#value_y=value_y/n
-#
-#
-#############calc which can be removed on y vales
-#new_average_for_y=np.abs(avgslots-value_y)
-#max_y_remove=np.max(new_average_for_y)
-#new_average_for_y=new_average_for_y/max_y_remove*100
-#
-#
-#############calc which can be removed on db vales
-#new_average_for_db=np.abs(dbs_final-value)
-#max_db_remove=np.max(new_average_for_db)
-#new_average_for_db=new_average_for_db/max_db_remove*100
+
+###############distinguish between advertisements and actual video
 km_2=np.zeros(slot_size-1)
 if np.size(np.where(avgslots_saturation_kmeans<=0.1))>1:
     for i in np.where(avgslots_saturation_kmeans<=0.1):
@@ -323,7 +299,28 @@ for i in range(slot_size-1):
       size_1+=(slots_y[i+1]-slots_y[i])  
     elif km_2[i]==1:
       size_2+=(slots_y[i+1]-slots_y[i])
-      
+
+if size_1 < size_2:
+    remove=0
+else:
+    remove=1
+    
+for i in range(slot_size-1):
+    if km_2[i]==remove:
+        mat1=np.delete(mat1,np.arange(slots_y[i]*12*352*288*3,slots_y[i+1]*12*352*288*3))
+        left=np.delete(mat1,np.arange(slots_y[i]*24000,slots_y[i+1]*24000))
+
+f=open('C:\\Users\\parin\\Documents\\MM\\testVideo3_ironman(new).rgb', 'wb')       
+mat1.tofile(f)
+f.close()
+
+
+noise_output = wave.open('C:\\Users\\parin\\Documents\\MM\\testVideo3_ironman(new).wav', 'wb')
+noise_output.setparams(waveFile.getparams())
+noise_output.writeframes(numpy2string(left))
+noise_output.close()
+
+
 
 #var1=np.array([],dtype=np.uint8)
 #var2=np.array([],dtype=np.uint8)
@@ -332,18 +329,9 @@ for i in range(slot_size-1):
 #        var1=np.append(var1,np.uint8(mat1[slots_y[i-1]*12*352*288*3:slots_y[i]*12*352*288*3]))
 #    elif km_2[i-1]==1:
 #        var2=np.append(var2,np.uint8(mat1[slots_y[i-1]*12*352*288*3:slots_y[i]*12*352*288*3]))
-        
-#f=open('C:\\Users\\parin\\Documents\\MM\\testVideo3_ironman(new).rgb', 'wb')       
-#var1.tofile(f)
-#f.close()
 #var1_wav=np.array([],dtype=np.int32)
 #for i in np.arange(1,slot_size):
 #    if km_2[i-1]==0:
 #        var1_wav=np.append(var1_wav,left[slots_y[i-1]*24000:slots_y[i]*24000])
 #
 #
-##value_str = ''.join(var1_wav.tostring())
-#noise_output = wave.open('C:\\Users\\parin\\Documents\\MM\\testVideo3_ironman(new).wav', 'wb')
-#noise_output.setparams(waveFile.getparams())
-#noise_output.writeframes(numpy2string(var1_wav))
-#noise_output.close()
