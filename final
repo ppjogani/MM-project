@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 
@@ -308,7 +307,7 @@ else:
 for i in range(slot_size-1):
     if km_2[i]==remove:
         mat1=np.delete(mat1,np.arange(slots_y[i]*12*352*288*3,slots_y[i+1]*12*352*288*3))
-        left=np.delete(mat1,np.arange(slots_y[i]*24000,slots_y[i+1]*24000))
+        left=np.delete(left,np.arange(slots_y[i]*24000,slots_y[i+1]*24000))
 
 f=open('C:\\Users\\parin\\Documents\\MM\\testVideo3_ironman(new).rgb', 'wb')       
 mat1.tofile(f)
